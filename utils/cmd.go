@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os/exec"
 )
@@ -8,7 +9,7 @@ import (
 func ExcuteCommand(command string, params []string) (err error) {
 
 	err = exec.Command(command, params...).Run()
-
+    fmt.Println(err)
 	if err != nil {
 		checkErr(err)
 		return

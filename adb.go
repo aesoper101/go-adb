@@ -2,6 +2,7 @@ package Adb
 
 import (
 	"Adb/utils"
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -54,10 +55,28 @@ func (self *Adb) ReadDevices() []Device{
 	return DeviceList
 }
 
-// 新版截图，直接存到电脑中
+// 新版截图，直接存到电脑中 adb exec-out screencap -p > sc.png
 func (self *Adb) LatestScreenShot(pcPicPath string) error{
 
 	return utils.ExcuteCommand("adb", []string{"exec-out", "screencap", "-p", ">", pcPicPath})
+}
+
+func (self *Adb) OldScreenShot(sdFilePath string, pcPath string, deleteOriginFile bool) error{
+
+	err := self.ScreenShot(sdFilePath)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
+
+	err = self.Pull(sdFilePath, pcPath)
+
+	if deleteOriginFile == true {
+		self.RemoveFile(sdFilePath)
+	}
+
+	return err
 }
 
 // 截图存到手机卡中
@@ -84,4 +103,9 @@ func (self *Adb) Tap(x string, y string) error {
 // 滑动屏幕
 func (self *Adb) Swipe(x string, y string) error{
 	return utils.ExcuteCommand("adb", []string{"shell", "input", "Swipe", x, y})
+}
+
+// 删除文件
+func(self *Adb) RemoveFile(sdFilePath string) error {
+	return utils.ExcuteCommand("adb", []string{"shell", "rm", sdFilePath})
 }
